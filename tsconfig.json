@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "paths": {
+      "@flex-crud/*": ["packages/*/index.ts"],
+      "flex-crud": ["packages/flex-crud/index.ts"]
+    }
+  }
+}

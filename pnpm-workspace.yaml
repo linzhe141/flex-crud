@@ -1,0 +1,9 @@
+packages:
+  - 'packages/*'
+  - playground
+catalog:
+  'element-plus': "^2.9.0"
+  'vue': "^3.3.0"
+  'vue-router': "^4.0.16"
+  'vite': ^5.4.14
+  '@vitejs/plugin-vue': ^5.2.2
