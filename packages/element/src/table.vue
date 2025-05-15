@@ -44,5 +44,5 @@ type Props = {
   props: TableProps<Row>
   columns: Partial<TableColumnCtx<Row>>[]
 }
-const props = defineProps<Props>()
+defineProps<Props>()
 </script>
