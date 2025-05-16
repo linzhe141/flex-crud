@@ -6,6 +6,8 @@ import {
   Dialog,
   type DialogProps,
   Form,
+  type FormProps,
+  FormExposeData,
 } from '@flex-crud/element'
 import {
   ContainerWrapper,
@@ -15,6 +17,8 @@ import {
 import OperateCell from './OperateCell.vue'
 import { h, reactive, ref } from 'vue'
 import { ElInput, InputProps } from 'element-plus'
+
+import Title from './Title.vue'
 
 const getSearchFormDefaultValue = () => ({
   x: 1,
@@ -136,7 +140,8 @@ const tableProps = reactive({
   ],
 }) as FCTableProps
 
-const addEditFormRef = ref<InstanceType<typeof Form>>(null)
+const addEditFormRef = ref<FormExposeData>(null)
+
 const getAddFormDefaultValue = () => ({
   x: null,
   y: 2,
@@ -149,6 +154,22 @@ const addEditFormProps = reactive({
   },
   items: [
     {
+      // TODO 类型
+      name: '',
+      type: 'display-item',
+      style: {
+        width: '100%',
+        marginBottom: '12px',
+      },
+      component: {
+        name: Title,
+        props: {
+          title: '标题1',
+        },
+      },
+    },
+    {
+      type: 'form-item',
       label: '名称x',
       name: 'x',
       rules: [{ required: true, message: '请输入！' }],
@@ -168,6 +189,7 @@ const addEditFormProps = reactive({
       },
     },
     {
+      type: 'form-item',
       label: '名称y',
       name: 'y',
       component: {
@@ -183,6 +205,7 @@ const addEditFormProps = reactive({
       },
     },
     {
+      type: 'form-item',
       label: '名称z',
       name: 'z',
       component: {
@@ -198,7 +221,7 @@ const addEditFormProps = reactive({
       },
     },
   ],
-})
+}) as FormProps
 const addEditDialogProps = reactive({
   dialogProps: {
     width: '800px',

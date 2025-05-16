@@ -21,7 +21,6 @@ export function setup() {
     locale: zhCn,
   })
   app.mount(document.querySelector('#root')!)
-  return getContext()
 }
 
 export * from './src/components'

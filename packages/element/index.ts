@@ -8,6 +8,18 @@ import { type Props as FCTableProps } from './src/table/props'
 import Dialog from './src/dialog/dialog.vue'
 import { type Props as DialogProps } from './src/dialog/props'
 
-import Form from './src/form/form.vue'
+import Form, {
+  type Props as FormProps,
+  type ExposeData as FormExposeData,
+} from './src/form/form'
 
-export { Table, SearchForm, FCTableProps, Dialog, DialogProps, Form }
+export {
+  Table,
+  SearchForm,
+  FCTableProps,
+  Dialog,
+  DialogProps,
+  Form,
+  FormProps,
+  FormExposeData,
+}
