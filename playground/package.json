@@ -8,7 +8,8 @@
     "dev": "vite"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "catalog:"
+    "@vitejs/plugin-vue": "catalog:",
+    "element-plus": "catalog:"
   },
   "keywords": [],
   "author": "",

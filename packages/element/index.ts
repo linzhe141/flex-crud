@@ -1,5 +1,13 @@
 import 'element-plus/dist/index.css'
-import Table from './src/table.vue'
-import Form from './src/form.vue'
 
-export { Table, Form }
+import SearchForm from './src/search-form/search-form.vue'
+
+import Table from './src/table/table.vue'
+import { type Props as FCTableProps } from './src/table/props'
+
+import Dialog from './src/dialog/dialog.vue'
+import { type Props as DialogProps } from './src/dialog/props'
+
+import Form from './src/form/form.vue'
+
+export { Table, SearchForm, FCTableProps, Dialog, DialogProps, Form }

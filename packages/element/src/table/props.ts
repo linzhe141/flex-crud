@@ -1,18 +1,4 @@
-<template>
-  <el-table class="w-full" v-bind="props" v-on="listeners">
-    <el-table-column v-for="col of columns" :key="col.prop" v-bind="col" />
-  </el-table>
-</template>
-
-<script lang="ts" setup>
-import {
-  type TableProps,
-  type TableColumnCtx,
-  ElTable,
-  ElTableColumn,
-  ElLoading,
-} from 'element-plus'
-import 'element-plus/es/components/button/style/css'
+import { TableColumnCtx, TableProps } from 'element-plus'
 
 // copy 源码
 const tableEmits = [
@@ -39,10 +25,8 @@ const tableEmits = [
 
 type Row = Record<string, any>
 
-type Props = {
+export type Props = {
   listeners?: { [K in (typeof tableEmits)[number]]?: (...args: any[]) => any }
   props: TableProps<Row>
   columns: Partial<TableColumnCtx<Row>>[]
 }
-defineProps<Props>()
-</script>
