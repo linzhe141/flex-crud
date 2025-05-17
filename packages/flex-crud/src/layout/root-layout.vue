@@ -4,8 +4,8 @@ import { RouterLink } from 'vue-router'
 
 <template>
   <div class="h-screen flex-col flex">
-    <div class="h-15 bg-emerald-300">
-      <div>1</div>
+    <div class="h-15 bg-emerald-300 flex items-center px-5 justify-between">
+      <div class="">flex crud</div>
       <div>1</div>
     </div>
     <div class="h-0 flex-1 flex">

@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { ElDialog, ElButton } from 'element-plus'
 import { Props } from './props'
 const _props = defineProps<Props>()
+
+defineEmits<{
+  close: []
+}>()
 </script>
 
 <template>
@@ -8,6 +13,8 @@ const _props = defineProps<Props>()
     v-bind="dialogProps"
     destroy-on-close
     v-model="dialogProps.modelValue"
+    append-to-body
+    @close="$emit('close')"
   >
     <template #header="{ close }">
       <div class="dialog-header flex jusitify-between">

@@ -13,6 +13,8 @@ import Form, {
   type ExposeData as FormExposeData,
 } from './src/form/form'
 
+import Select from './src/select/select.vue'
+
 export {
   Table,
   SearchForm,
@@ -22,4 +24,5 @@ export {
   Form,
   FormProps,
   FormExposeData,
+  Select,
 }

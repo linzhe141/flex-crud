@@ -2,9 +2,6 @@
 defineProps<{
   title: string
 }>()
-defineExpose({
-  x:1
-})
 </script>
 
 <template>

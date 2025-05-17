@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import {
-  Table,
-  SearchForm,
-  type FCTableProps,
-  Dialog,
-  type DialogProps,
-  Form,
-  type FormProps,
-  FormExposeData,
-} from '@flex-crud/element'
+import { Table, SearchForm, type FCTableProps } from '@flex-crud/element'
 import {
   ContainerWrapper,
   type TableToolbarProps,
   TableToolbar,
 } from 'flex-crud'
-import OperateCell from './OperateCell.vue'
-import { h, reactive, ref } from 'vue'
-import { ElInput, InputProps } from 'element-plus'
-
-import Title from './Title.vue'
+import OperateCell from '../../../packages/flex-crud/src/components/operate-cell/operate-cell.vue'
+import { h, markRaw, reactive, ref } from 'vue'
+import { ElInput } from 'element-plus'
+import AddEditDialog from './dialog/add-edit/dialog.vue'
 
 const getSearchFormDefaultValue = () => ({
   x: 1,
@@ -35,7 +25,7 @@ const searchFormProps = reactive({
       label: '名称',
       name: 'x',
       component: {
-        name: ElInput,
+        name: markRaw(ElInput),
         props: {
           placeholder: '请输入',
         },
@@ -65,6 +55,7 @@ function onReset() {
 }
 
 // 表格相关操作
+const showAddEditDialog = ref(false)
 const tableRef = ref<InstanceType<typeof Table>>(null)
 const tableToolbarProps = reactive({
   batchOprates: [
@@ -86,12 +77,7 @@ const tableToolbarProps = reactive({
       text: '新增',
       show: true,
       onClick() {
-        addEditDialogProps.dialogProps.modelValue = true
-        Object.assign(
-          addEditFormProps.formProps.model,
-          getAddFormDefaultValue(),
-        )
-        console.log('11111')
+        showAddEditDialog.value = true
       },
     },
   ],
@@ -139,111 +125,6 @@ const tableProps = reactive({
     },
   ],
 }) as FCTableProps
-
-const addEditFormRef = ref<FormExposeData>(null)
-
-const getAddFormDefaultValue = () => ({
-  x: null,
-  y: 2,
-  z: 3,
-})
-const addEditFormProps = reactive({
-  formProps: {
-    model: getAddFormDefaultValue(),
-    labelWidth: 'auto',
-  },
-  items: [
-    {
-      // TODO 类型
-      name: '',
-      type: 'display-item',
-      style: {
-        width: '100%',
-        marginBottom: '12px',
-      },
-      component: {
-        name: Title,
-        props: {
-          title: '标题1',
-        },
-      },
-    },
-    {
-      type: 'form-item',
-      label: '名称x',
-      name: 'x',
-      rules: [{ required: true, message: '请输入！' }],
-      tooltip: {
-        text: '123',
-      },
-      component: {
-        name: ElInput,
-        props: {
-          placeholder: '请输入',
-        },
-        listeners: {
-          change(val) {
-            console.log(val)
-          },
-        },
-      },
-    },
-    {
-      type: 'form-item',
-      label: '名称y',
-      name: 'y',
-      component: {
-        name: ElInput,
-        props: {
-          placeholder: '请输入',
-        },
-        listeners: {
-          change(val) {
-            console.log(val)
-          },
-        },
-      },
-    },
-    {
-      type: 'form-item',
-      label: '名称z',
-      name: 'z',
-      component: {
-        name: ElInput,
-        props: {
-          placeholder: '请输入',
-        },
-        listeners: {
-          change(val) {
-            console.log(val)
-          },
-        },
-      },
-    },
-  ],
-}) as FormProps
-const addEditDialogProps = reactive({
-  dialogProps: {
-    width: '800px',
-    modelValue: false,
-    title: '新增',
-  },
-  footer: [
-    {
-      text: '关闭',
-      onClick() {
-        addEditDialogProps.dialogProps.modelValue = false
-      },
-    },
-    {
-      text: '保存',
-      async onClick() {
-        const validate = await addEditFormRef.value.validate()
-        if (validate) addEditDialogProps.dialogProps.modelValue = false
-      },
-    },
-  ],
-}) as DialogProps
 </script>
 <template>
   <div class="space-y-4">
@@ -265,7 +146,5 @@ const addEditDialogProps = reactive({
       />
     </ContainerWrapper>
   </div>
-  <Dialog v-bind="addEditDialogProps">
-    <Form ref="addEditFormRef" v-bind="addEditFormProps" />
-  </Dialog>
+  <AddEditDialog v-if="showAddEditDialog" v-model="showAddEditDialog" />
 </template>

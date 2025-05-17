@@ -4,9 +4,9 @@ import {
   ElFormItem,
   FormProps,
   FormItemProps,
-  ElButton,
   ElPopover,
 } from 'element-plus'
+import QuestionIcon from './question-icon.vue'
 
 export type Props = {
   formProps: Partial<FormProps>
@@ -17,11 +17,13 @@ export type Props = {
     tooltip?: {
       text: string
     }
-    component: {
-      name: Component
-      props?: any
-      listeners?: {}
-    }
+    component:
+      | {
+          name: Component
+          props?: any
+          listeners?: {}
+        }
+      | ((vModel: any) => VNode)
   })[]
 }
 export type ExposeData = {
@@ -50,6 +52,94 @@ const Form = defineComponent({
       },
     }
     expose(exposeData)
+    function createDisplayWrapper(dispalyItem: Props['items'][number]) {
+      const displayWrapper = h(
+        'div',
+        null,
+        typeof dispalyItem.component === 'object'
+          ? normalizeVModelComponent(dispalyItem.component, {
+              modelValue: _props.formProps.model[dispalyItem.name],
+              'onUpdate:modelValue': newValue =>
+                (_props.formProps.model[dispalyItem.name] = newValue),
+            })
+          : dispalyItem.component({
+              modelValue: _props.formProps.model[dispalyItem.name],
+              'onUpdate:modelValue': newValue =>
+                (_props.formProps.model[dispalyItem.name] = newValue),
+            }),
+      )
+      return displayWrapper
+    }
+
+    function createFormItem(formItem: Props['items'][number]) {
+      const questionWrapper = h(
+        'div',
+        {
+          style: { width: '24px', marginLeft: '4px' },
+        },
+        [
+          formItem.tooltip &&
+            h(
+              ElPopover,
+              { trigger: 'click' },
+              {
+                reference() {
+                  return h(QuestionIcon)
+                },
+                default() {
+                  return h('div', { innerHTML: formItem.tooltip.text })
+                },
+              },
+            ),
+        ],
+      )
+
+      const formItemWrapper = h(
+        ElFormItem,
+        {
+          ...formItem,
+          label: formItem.label + ':',
+          style: {
+            width: '100%',
+          },
+          prop: formItem.name,
+        },
+        {
+          default() {
+            return h(
+              'div',
+              {
+                style: {
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                },
+              },
+              [
+                h(
+                  'div',
+                  { style: { flex: 1 } },
+                  typeof formItem.component === 'object'
+                    ? normalizeVModelComponent(formItem.component, {
+                        modelValue: _props.formProps.model[formItem.name],
+                        'onUpdate:modelValue': newValue =>
+                          (_props.formProps.model[formItem.name] = newValue),
+                      })
+                    : formItem.component({
+                        modelValue: _props.formProps.model[formItem.name],
+                        'onUpdate:modelValue': newValue =>
+                          (_props.formProps.model[formItem.name] = newValue),
+                      }),
+                ),
+                questionWrapper,
+              ],
+            )
+          },
+        },
+      )
+      return formItemWrapper
+    }
+
     return () => {
       const vnode = h(
         ElForm,
@@ -64,7 +154,7 @@ const Form = defineComponent({
         {
           default() {
             return _props.items.map((item, index) => {
-              const props = {
+              const containerProps = {
                 key: item.label + '-' + index,
                 style: Object.assign(
                   { width: '50%', padding: '0 10px' },
@@ -73,79 +163,13 @@ const Form = defineComponent({
               }
               const chilren: VNode[] = []
               if (item.type === 'display-item') {
-                const listeners = {}
-                item.component.listeners &&
-                  Object.entries(item.component.listeners).forEach(
-                    ([eventName, handler]) => {
-                      const name =
-                        'on' + eventName[0].toUpperCase() + eventName.slice(1)
-                      listeners[name] = handler
-                    },
-                  )
-                const displayWrapper = h(
-                  'div',
-                  null,
-                  h(item.component.name, {
-                    ...item.component.props,
-                    ...listeners,
-                    modelValue: _props.formProps.model[item.name],
-                    'onUpdate:modelValue': newValue =>
-                      (_props.formProps.model[item.name] = newValue),
-                  }),
-                )
+                const displayWrapper = createDisplayWrapper(item)
                 chilren.push(displayWrapper)
               } else if (item.type === 'form-item') {
-                const formItem = h(
-                  ElFormItem,
-                  {
-                    ...item,
-                    label: item.label + ':',
-                    style: {
-                      width: '100%',
-                    },
-                    prop: item.name,
-                  },
-                  {
-                    default() {
-                      const listeners = {}
-                      item.component.listeners &&
-                        Object.entries(item.component.listeners).forEach(
-                          ([eventName, handler]) => {
-                            const name =
-                              'on' +
-                              eventName[0].toUpperCase() +
-                              eventName.slice(1)
-                            listeners[name] = handler
-                          },
-                        )
-
-                      return h(
-                        'div',
-                        {
-                          style: {
-                            display: 'flex',
-                            alignItems: 'center',
-                            width: '100%',
-                          },
-                        },
-                        h(
-                          'div',
-                          { style: { flex: 1 } },
-                          h(item.component.name, {
-                            ...item.component.props,
-                            ...listeners,
-                            modelValue: _props.formProps.model[item.name],
-                            'onUpdate:modelValue': newValue =>
-                              (_props.formProps.model[item.name] = newValue),
-                          }),
-                        ),
-                      )
-                    },
-                  },
-                )
-                chilren.push(formItem)
+                const formItemWrapper = createFormItem(item)
+                chilren.push(formItemWrapper)
               }
-              return h('div', props, chilren)
+              return h('div', containerProps, chilren)
             })
           },
         },
@@ -156,3 +180,40 @@ const Form = defineComponent({
 })
 
 export default Form
+
+function normalizeListeners(
+  listeners: undefined | Record<string, Function>,
+  vModel: {
+    modelValue: any
+    'onUpdate:modelValue': (newValue: any) => any
+  },
+) {
+  const formatListeners = {}
+
+  listeners &&
+    Object.entries(listeners).forEach(([eventName, handler]) => {
+      const name = 'on' + eventName[0].toUpperCase() + eventName.slice(1)
+      formatListeners[name] = handler
+    })
+
+  Object.assign(formatListeners, vModel)
+  return formatListeners
+}
+
+function normalizeVModelComponent(
+  component: {
+    name: Component
+    props?: any
+    listeners?: {}
+  },
+  vModel: {
+    modelValue: any
+    'onUpdate:modelValue': (newValue: any) => any
+  },
+) {
+  const vnode = h(component.name, {
+    ...(component.props ?? {}),
+    ...normalizeListeners(component.listeners, vModel),
+  })
+  return vnode
+}
